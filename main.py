@@ -46,6 +46,8 @@ class MainWidget(QMainWindow, Ui_MainWindow):
         self.ww.show()
 
     def start_automatization_widget(self):
+        #виджет создаётся только в первый раз,
+        # для исключения одновременного запуска двух задач поиска новых файлов
         if self.aw == "новый":
             self.aw = AutomatizationWidget(self)
         self.aw.show()
@@ -137,9 +139,11 @@ class MainWidget(QMainWindow, Ui_MainWindow):
         else:
             self.statusbar.showMessage("Неправильный входной или выходной путь.")
 
+    # Завершение обработки видео
     def finish_process(self):
         self.ww.hide()
         self.start_btn.setEnabled(True)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -120,14 +120,14 @@ class AutomatizationWidget(QWidget, Ui_Form):
         self.msg_in_path.setWindowTitle("Пустой путь")
         self.msg_in_path.setText("Не выбрана входная папка")
         self.msg_in_path.setInformativeText('Пожалуйста, выберите папку из которой будут автоматически обрабатываться файлы. \
-        Это можно сделать  с помощью верхней кнопки "выбрать папку".')
+Это можно сделать  с помощью верхней кнопки "выбрать папку".')
 
         self.msg_out_path = QMessageBox()
         self.msg_out_path.setIcon(QMessageBox.Warning)
         self.msg_out_path.setWindowTitle("Пустой путь")
         self.msg_out_path.setText("Не выбрана выходная папка")
         self.msg_out_path.setInformativeText('Пожалуйста, выберите папку в которую будут сохраняться файлы. \
-        Это можно сделать  с помощью нижней кнопки "выбрать папку".')
+Это можно сделать  с помощью нижней кнопки "выбрать папку".')
 
         self.msg_in_out_path = QMessageBox()
         self.msg_in_out_path.setIcon(QMessageBox.Warning)
