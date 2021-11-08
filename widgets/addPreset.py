@@ -10,7 +10,7 @@ class AddPresetWidget(QWidget, Ui_Add_Preset):
         self.setupUi(self)
         self.pmain = pmain
         self.psettings = psettings
-        self.load_settings()
+        self.default_settings()
         self.connect_btn()
         self.create_dialog()
 
@@ -29,13 +29,18 @@ class AddPresetWidget(QWidget, Ui_Add_Preset):
 
     def connect_btn(self):
         self.save_btn.clicked.connect(self.save_preset)
-        self.default_btn.clicked.connect(self.load_settings)
+        self.default_btn.clicked.connect(self.default_settings)
         self.cancel_btn.clicked.connect(self.close_widget)
 
-    def load_settings(self):
-        self.sensitivity_settings.setValue(20)
-        self.indent_settings.setValue(0.20)
-        self.step_settings.setValue(0.20)
+    def default_settings(self):
+        cur = self.pmain.con.cursor()
+        result = cur.execute(
+            """select * from preset
+            where Name = 'Default'"""
+        ).fetchone()
+        self.sensitivity_settings.setValue(result[1])
+        self.indent_settings.setValue(result[2])
+        self.step_settings.setValue(result[3])
 
     def save_preset(self):
         if self.preset_name.text() == "":

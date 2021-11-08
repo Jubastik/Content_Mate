@@ -13,6 +13,7 @@ class AutomatizationWidget(QWidget, Ui_Form):
         self.load_combobox()
         self.checkbox_changing()
         self.create_dialog()
+        self.default_settings()
 
     def connect_all(self):
         self.use_presets.stateChanged.connect(self.checkbox_changing)
@@ -20,6 +21,17 @@ class AutomatizationWidget(QWidget, Ui_Form):
         self.in_btn.clicked.connect(self.load_in)
         self.out_btn.clicked.connect(self.load_out)
         self.start_btn.clicked.connect(self.start_search_task)
+        self.default_btn.clicked.connect(self.default_settings)
+
+    def default_settings(self):
+        cur = self.parent.con.cursor()
+        result = cur.execute(
+            """select * from preset
+            where Name = 'Default'"""
+        ).fetchone()
+        self.sensitivity_settings.setValue(result[1])
+        self.indent_settings.setValue(result[2])
+        self.step_settings.setValue(result[3])
 
     def interface_on_off(self, position):
         self.presets.setEnabled(position)

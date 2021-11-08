@@ -17,6 +17,17 @@ class ChangePresetWidget(QWidget, Ui_Change_Preset):
         self.presets.currentTextChanged.connect(self.combobox_changing)
         self.save_btn.clicked.connect(self.save_settings)
         self.cancel_btn.clicked.connect(self.close_widget)
+        self.default_btn.clicked.connect(self.default_settings)
+
+    def default_settings(self):
+        cur = self.pmain.con.cursor()
+        result = cur.execute(
+            """select * from preset
+            where Name = 'Default'"""
+        ).fetchone()
+        self.sensitivity_settings.setValue(result[1])
+        self.indent_settings.setValue(result[2])
+        self.step_settings.setValue(result[3])
 
     def combobox_changing(self):
         preset_name = self.presets.currentText()
