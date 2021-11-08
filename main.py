@@ -21,14 +21,14 @@ class MainWidget(QMainWindow, Ui_MainWindow):
         self.connect_all()
         self.checkbox_changing()
         self.load_combobox()
-        self.load_settings()
+        self.default_settings()
         self.aw = "новый"
 
     def connect_all(self):
         self.in_btn.clicked.connect(self.load_in)
         self.out_btn.clicked.connect(self.load_out)
         self.start_btn.clicked.connect(self.start)
-        self.default_btn.clicked.connect(self.load_settings)
+        self.default_btn.clicked.connect(self.default_settings)
         self.edit_btn.clicked.connect(self.start_settings_widget)
 
         self.use_presets.stateChanged.connect(self.checkbox_changing)
@@ -76,10 +76,16 @@ class MainWidget(QMainWindow, Ui_MainWindow):
         result = [f'{i[0]}' for i in result]
         self.presets.addItems(result)
 
-    def load_settings(self):
-        self.sensitivity_settings.setValue(20)
-        self.indent_settings.setValue(0.20)
-        self.step_settings.setValue(0.20)
+    def default_settings(self):
+        cur = self.con.cursor()
+        result = cur.execute(
+            """select * from preset
+            where Name = 'Default'"""
+        ).fetchone()
+        print(result)
+        self.sensitivity_settings.setValue(result[1])
+        self.indent_settings.setValue(result[2])
+        self.step_settings.setValue(result[3])
 
     def checkbox_changing(self):
         if self.use_presets.isChecked() == False:
