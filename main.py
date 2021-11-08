@@ -122,17 +122,17 @@ class MainWidget(QMainWindow, Ui_MainWindow):
             self.out_edit.setText(fname)
 
     def start(self):
-        f = self.in_edit.toPlainText().split("\n")
-        o = self.out_edit.text()
-        if f and o and os.path.isfile(f[0]) and os.path.isdir(o):
+        in_path = self.in_edit.toPlainText().split("\n")
+        out_path = self.out_edit.text()
+        if in_path and out_path and os.path.isfile(in_path[0]) and os.path.isdir(out_path):
             if self.log:
-                self.log_file.write(f"Старт обработки файлов {f}\n")
-            se = float("0." + self.sensitivity_settings.text())
-            i = self.indent_settings.value()
-            st = self.step_settings.value()
+                self.log_file.write(f"Старт обработки файлов {in_path}\n")
+            sensitivity = float("0." + self.sensitivity_settings.text())
+            indent = self.indent_settings.value()
+            step = self.step_settings.value()
             self.start_wait_widget()
             self.start_btn.setEnabled(False)
-            my_thread = threading.Thread(target=pause_handler, args=(self.finish_process, f, o, se, i, st, self.log, self.log_file))
+            my_thread = threading.Thread(target=pause_handler, args=(self.finish_process, in_path, out_path, sensitivity, indent, step, self.log, self.log_file))
             my_thread.start()
         else:
             self.statusbar.showMessage("Неправильный входной или выходной путь.")
