@@ -10,7 +10,7 @@ class SettingsWidget(QWidget, Ui_Form):
         super().__init__()
         # uic.loadUi('settings_v2.ui', self)
         self.setupUi(self)
-        self.parent = parent
+        self.parent = parent #ссылка на основное окно
         self.connect_btn()
         self.load_settings_db()
         self.load_combobox()

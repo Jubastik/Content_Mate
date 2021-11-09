@@ -1,5 +1,7 @@
 import sys
 import  os
+import webbrowser
+
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from datetime import date
 import threading
@@ -30,6 +32,7 @@ class MainWidget(QMainWindow, Ui_MainWindow):
         self.start_btn.clicked.connect(self.start)
         self.default_btn.clicked.connect(self.default_settings)
         self.edit_btn.clicked.connect(self.start_settings_widget)
+        self.info_btn.clicked.connect(self.open_info_web)
 
         self.use_presets.stateChanged.connect(self.checkbox_changing)
         self.presets.currentTextChanged.connect(self.combobox_changing)
@@ -44,6 +47,9 @@ class MainWidget(QMainWindow, Ui_MainWindow):
     def start_wait_widget(self):
         self.ww = WaitWidget()
         self.ww.show()
+
+    def open_info_web(self):
+        webbrowser.open('https://docs.google.com/document/d/1Ei-w7j8RJc28rdgABKlUQFaKFfyEBid7K358f7bJuhY/edit#bookmark=id.t8ov2pdm0t5')
 
     def start_automatization_widget(self):
         #виджет создаётся только в первый раз,
@@ -84,7 +90,6 @@ class MainWidget(QMainWindow, Ui_MainWindow):
             """select * from preset
             where Name = 'Default'"""
         ).fetchone()
-        print(result)
         self.sensitivity_settings.setValue(result[1])
         self.indent_settings.setValue(result[2])
         self.step_settings.setValue(result[3])
@@ -114,7 +119,7 @@ class MainWidget(QMainWindow, Ui_MainWindow):
         self.step_settings.setValue(result[2])
 
     def load_in(self):
-        fname = QFileDialog.getOpenFileNames(self, 'Выбрать файл (-ы)', '', 'Видео (*.mp4);;Аудио (*.mp3)')
+        fname = QFileDialog.getOpenFileNames(self, 'Выбрать файл (-ы)', '', 'Видео (*.mp4);')
         if fname[0]:
             self.in_edit.setText("\n".join(fname[0]))
 

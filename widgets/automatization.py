@@ -1,3 +1,5 @@
+import webbrowser
+
 from PyQt5.QtWidgets import QFileDialog, QWidget, QMessageBox
 import os
 
@@ -8,7 +10,7 @@ class AutomatizationWidget(QWidget, Ui_Form):
     def __init__(self, parent):
         super().__init__()
         self.setupUi(self)
-        self.parent = parent
+        self.parent = parent #ссылка на основное окно
         self.connect_all()
         self.load_combobox()
         self.checkbox_changing()
@@ -22,6 +24,14 @@ class AutomatizationWidget(QWidget, Ui_Form):
         self.out_btn.clicked.connect(self.load_out)
         self.start_btn.clicked.connect(self.start_search_task)
         self.default_btn.clicked.connect(self.default_settings)
+        self.info_btn.clicked.connect(self.open_info_web)
+        self.info_btn_2.clicked.connect(self.open_info_automation_web)
+
+    def open_info_web(self):
+        webbrowser.open('https://docs.google.com/document/d/1Ei-w7j8RJc28rdgABKlUQFaKFfyEBid7K358f7bJuhY/edit#bookmark=id.t8ov2pdm0t5')
+
+    def open_info_automation_web(self):
+        webbrowser.open('https://docs.google.com/document/d/1Ei-w7j8RJc28rdgABKlUQFaKFfyEBid7K358f7bJuhY/edit#bookmark=id.o7ls0r51164r')
 
     def default_settings(self):
         cur = self.parent.con.cursor()

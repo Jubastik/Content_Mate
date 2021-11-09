@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(696, 272)
+        Form.resize(695, 243)
         self.horizontalLayout_7 = QtWidgets.QHBoxLayout(Form)
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
         self.verticalLayout = QtWidgets.QVBoxLayout()
@@ -85,6 +85,9 @@ class Ui_Form(object):
         self.label_4.setObjectName("label_4")
         self.horizontalLayout_4.addWidget(self.label_4)
         self.indent_settings = QtWidgets.QDoubleSpinBox(Form)
+        self.indent_settings.setMinimum(0.05)
+        self.indent_settings.setMaximum(2.0)
+        self.indent_settings.setSingleStep(0.01)
         self.indent_settings.setObjectName("indent_settings")
         self.horizontalLayout_4.addWidget(self.indent_settings)
         self.label_8 = QtWidgets.QLabel(Form)
@@ -97,6 +100,9 @@ class Ui_Form(object):
         self.label_3.setObjectName("label_3")
         self.horizontalLayout_5.addWidget(self.label_3)
         self.step_settings = QtWidgets.QDoubleSpinBox(Form)
+        self.step_settings.setMinimum(0.05)
+        self.step_settings.setMaximum(2.0)
+        self.step_settings.setSingleStep(0.01)
         self.step_settings.setObjectName("step_settings")
         self.horizontalLayout_5.addWidget(self.step_settings)
         self.label_7 = QtWidgets.QLabel(Form)

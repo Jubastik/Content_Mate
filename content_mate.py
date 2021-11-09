@@ -1,6 +1,7 @@
-from moviepy.editor import VideoClip, VideoFileClip, concatenate_videoclips
+from moviepy.video.io.VideoFileClip import VideoFileClip
+from moviepy.video.VideoClip import VideoClip
+from moviepy.video.compositing.concatenate import concatenate_videoclips
 import numpy as np
-
 
 
 def pause_handler(end_process, input_path, output_path, sensitivity=0.10, indent=0.2, step_vol=0.1, log=False, log_file=""):
@@ -50,12 +51,11 @@ def pause_handler(end_process, input_path, output_path, sensitivity=0.10, indent
                     del ok_parts[i + 1]
                 else:
                     i += 1
-
         if log:
             log_file.write(f"Обработка завершена, начало склеивания клипов {path}\n")
 
         out_clip = [clip.subclip(s, f) for s, f in ok_parts]
-        return concatenate_videoclips(out_clip).volumex(0.9 / max_volume)
+        return concatenate_videoclips(out_clip)
 
 
     for path in input_path:
