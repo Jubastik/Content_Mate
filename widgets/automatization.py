@@ -1,16 +1,16 @@
 import webbrowser
-
 from PyQt5.QtWidgets import QFileDialog, QWidget, QMessageBox
 import os
 
 from .UI_automatization import Ui_Form
 from .searchTask import SearchWidget
 
+
 class AutomatizationWidget(QWidget, Ui_Form):
     def __init__(self, parent):
         super().__init__()
         self.setupUi(self)
-        self.parent = parent #ссылка на основное окно
+        self.parent = parent  # ссылка на основное окно
         self.connect_all()
         self.load_combobox()
         self.checkbox_changing()
@@ -28,10 +28,14 @@ class AutomatizationWidget(QWidget, Ui_Form):
         self.info_btn_2.clicked.connect(self.open_info_automation_web)
 
     def open_info_web(self):
-        webbrowser.open('https://docs.google.com/document/d/1Ei-w7j8RJc28rdgABKlUQFaKFfyEBid7K358f7bJuhY/edit#bookmark=id.t8ov2pdm0t5')
+        webbrowser.open(
+            "https://docs.google.com/document/d/1Ei-w7j8RJc28rdgABKlUQFaKFfyEBid7K358f7bJuhY/edit#bookmark=id.t8ov2pdm0t5"
+        )
 
     def open_info_automation_web(self):
-        webbrowser.open('https://docs.google.com/document/d/1Ei-w7j8RJc28rdgABKlUQFaKFfyEBid7K358f7bJuhY/edit#bookmark=id.o7ls0r51164r')
+        webbrowser.open(
+            "https://docs.google.com/document/d/1Ei-w7j8RJc28rdgABKlUQFaKFfyEBid7K358f7bJuhY/edit#bookmark=id.o7ls0r51164r"
+        )
 
     def default_settings(self):
         cur = self.parent.con.cursor()
@@ -58,8 +62,15 @@ class AutomatizationWidget(QWidget, Ui_Form):
     def start_search_task(self):
         if self.check_path():
             self.interface_on_off(False)
-            self.sw = SearchWidget(self, self.checkBox.isChecked(), self.in_edit.text(), self.out_edit.text(), float("0." + self.sensitivity_settings.text()),
-                                           self.indent_settings.value(), self.step_settings.value())
+            self.sw = SearchWidget(
+                self,
+                self.checkBox.isChecked(),
+                self.in_edit.text(),
+                self.out_edit.text(),
+                float("0." + self.sensitivity_settings.text()),
+                self.indent_settings.value(),
+                self.step_settings.value(),
+            )
             self.sw.show()
             self.parent.aw.hide()
 
@@ -73,7 +84,9 @@ class AutomatizationWidget(QWidget, Ui_Form):
         if self.out_edit.text() == "":
             self.msg_out_path.exec_()
             return False
-        if not os.path.isdir(self.in_edit.text()) and not os.path.isdir(self.out_edit.text()):
+        if not os.path.isdir(self.in_edit.text()) and not os.path.isdir(
+            self.out_edit.text()
+        ):
             self.msg_err_path.exec_()
             return False
         return True
@@ -82,22 +95,20 @@ class AutomatizationWidget(QWidget, Ui_Form):
         self.interface_on_off(True)
 
     def load_in(self):
-        fname = QFileDialog.getExistingDirectory(self, 'Выбрать папку', '')
+        fname = QFileDialog.getExistingDirectory(self, "Выбрать папку", "")
         if fname:
             self.in_edit.setText(fname)
 
     def load_out(self):
-        fname = QFileDialog.getExistingDirectory(self, 'Выбрать папку', '')
+        fname = QFileDialog.getExistingDirectory(self, "Выбрать папку", "")
         if fname:
             self.out_edit.setText(fname)
 
     def load_combobox(self):
         cur = self.parent.con.cursor()
-        result = cur.execute(
-            """select Name from preset"""
-        ).fetchall()
+        result = cur.execute("""select Name from preset""").fetchall()
         # result = [f'{n} - {s}% {i}сек. {st}сек.' for n, s, i, st in result]
-        result = [f'{i[0]}' for i in result]
+        result = [f"{i[0]}" for i in result]
         self.presets.addItems(result)
 
     def checkbox_changing(self):
@@ -118,7 +129,8 @@ class AutomatizationWidget(QWidget, Ui_Form):
         cur = self.parent.con.cursor()
         result = cur.execute(
             """select Sensitivity, Indent, Step from preset 
-            where Name = ?""", [preset_name]
+            where Name = ?""",
+            [preset_name],
         ).fetchone()
         self.sensitivity_settings.setValue(result[0])
         self.indent_settings.setValue(result[1])
@@ -129,26 +141,36 @@ class AutomatizationWidget(QWidget, Ui_Form):
         self.msg_in_path.setIcon(QMessageBox.Warning)
         self.msg_in_path.setWindowTitle("Пустой путь")
         self.msg_in_path.setText("Не выбрана входная папка")
-        self.msg_in_path.setInformativeText('Пожалуйста, выберите папку из которой будут автоматически обрабатываться файлы. \
-Это можно сделать  с помощью верхней кнопки "выбрать папку".')
+        self.msg_in_path.setInformativeText(
+            'Пожалуйста, выберите папку из которой будут автоматически обрабатываться файлы. \
+Это можно сделать  с помощью верхней кнопки "выбрать папку".'
+        )
 
         self.msg_out_path = QMessageBox()
         self.msg_out_path.setIcon(QMessageBox.Warning)
         self.msg_out_path.setWindowTitle("Пустой путь")
         self.msg_out_path.setText("Не выбрана выходная папка")
-        self.msg_out_path.setInformativeText('Пожалуйста, выберите папку в которую будут сохраняться файлы. \
-Это можно сделать  с помощью нижней кнопки "выбрать папку".')
+        self.msg_out_path.setInformativeText(
+            'Пожалуйста, выберите папку в которую будут сохраняться файлы. \
+Это можно сделать  с помощью нижней кнопки "выбрать папку".'
+        )
 
         self.msg_in_out_path = QMessageBox()
         self.msg_in_out_path.setIcon(QMessageBox.Warning)
         self.msg_in_out_path.setWindowTitle("Пустой путь")
         self.msg_in_out_path.setText("Не выбрана входная и выходная папка")
-        self.msg_in_out_path.setInformativeText('Пожалуйста, выберите папку из которой будут автоматически обрабатываться файлы и папку в которую будут сохраняться файлы. \
-Это можно сделать с помощью кнопок "выбрать папку".')
+        self.msg_in_out_path.setInformativeText(
+            'Пожалуйста, выберите папку из которой будут автоматически обрабатываться файлы и папку в которую будут сохраняться файлы. \
+Это можно сделать с помощью кнопок "выбрать папку".'
+        )
 
         self.msg_err_path = QMessageBox()
         self.msg_err_path.setIcon(QMessageBox.Warning)
         self.msg_err_path.setWindowTitle("Неправильный путь")
-        self.msg_err_path.setText("Входной или выходной путь содержит ошибку или не существует.")
-        self.msg_err_path.setInformativeText('Пожалуйста, выберите повторно входной и выходной путь. \
-Если проблема не исчезла, поменяйте их на другие.')
+        self.msg_err_path.setText(
+            "Входной или выходной путь содержит ошибку или не существует."
+        )
+        self.msg_err_path.setInformativeText(
+            "Пожалуйста, выберите повторно входной и выходной путь. \
+Если проблема не исчезла, поменяйте их на другие."
+        )

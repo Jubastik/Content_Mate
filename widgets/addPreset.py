@@ -1,5 +1,4 @@
 import webbrowser
-
 from PyQt5.QtWidgets import QFileDialog, QWidget, QMessageBox
 import sqlite3
 
@@ -10,8 +9,8 @@ class AddPresetWidget(QWidget, Ui_Add_Preset):
     def __init__(self, pmain, psettings):
         super().__init__()
         self.setupUi(self)
-        self.pmain = pmain #ссылка на основное окно
-        self.psettings = psettings #ссылка на окно настроек
+        self.pmain = pmain  # ссылка на основное окно
+        self.psettings = psettings  # ссылка на окно настроек
         self.default_settings()
         self.connect_btn()
         self.create_dialog()
@@ -27,7 +26,9 @@ class AddPresetWidget(QWidget, Ui_Add_Preset):
         self.msg_bad_name.setIcon(QMessageBox.Warning)
         self.msg_bad_name.setWindowTitle("Ошибка создания пресета")
         self.msg_bad_name.setText("Не уникальное имя пресета")
-        self.msg_bad_name.setInformativeText("Пожалуйста, введите уникальное имя пресета")
+        self.msg_bad_name.setInformativeText(
+            "Пожалуйста, введите уникальное имя пресета"
+        )
 
     def connect_btn(self):
         self.save_btn.clicked.connect(self.save_preset)
@@ -36,7 +37,9 @@ class AddPresetWidget(QWidget, Ui_Add_Preset):
         self.info_btn.clicked.connect(self.open_info_web)
 
     def open_info_web(self):
-        webbrowser.open('https://docs.google.com/document/d/1Ei-w7j8RJc28rdgABKlUQFaKFfyEBid7K358f7bJuhY/edit#bookmark=id.t8ov2pdm0t5')
+        webbrowser.open(
+            "https://docs.google.com/document/d/1Ei-w7j8RJc28rdgABKlUQFaKFfyEBid7K358f7bJuhY/edit#bookmark=id.t8ov2pdm0t5"
+        )
 
     def default_settings(self):
         cur = self.pmain.con.cursor()
@@ -54,12 +57,19 @@ class AddPresetWidget(QWidget, Ui_Add_Preset):
         else:
             cur = self.pmain.con.cursor()
             try:
-                cur.execute("""
+                cur.execute(
+                    """
                            INSERT INTO
                            preset VALUES
                            (?, ?, ?, ?)
                                """,
-                            [self.preset_name.text(), self.sensitivity_settings.value(), self.indent_settings.value(), self.step_settings.value()])
+                    [
+                        self.preset_name.text(),
+                        self.sensitivity_settings.value(),
+                        self.indent_settings.value(),
+                        self.step_settings.value(),
+                    ],
+                )
             except sqlite3.IntegrityError:
                 self.msg_bad_name.exec_()
 

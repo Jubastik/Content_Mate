@@ -9,8 +9,8 @@ class ChangePresetWidget(QWidget, Ui_Change_Preset):
     def __init__(self, pmain, psettings):
         super().__init__()
         self.setupUi(self)
-        self.pmain = pmain #ссылка на основное окно
-        self.psettings = psettings #ссылка на окно настроек
+        self.pmain = pmain  # ссылка на основное окно
+        self.psettings = psettings  # ссылка на окно настроек
         self.load_combobox()
         self.combobox_changing()
         self.connect_all()
@@ -23,7 +23,9 @@ class ChangePresetWidget(QWidget, Ui_Change_Preset):
         self.info_btn.clicked.connect(self.open_info_web)
 
     def open_info_web(self):
-        webbrowser.open('https://docs.google.com/document/d/1Ei-w7j8RJc28rdgABKlUQFaKFfyEBid7K358f7bJuhY/edit#bookmark=id.t8ov2pdm0t5')
+        webbrowser.open(
+            "https://docs.google.com/document/d/1Ei-w7j8RJc28rdgABKlUQFaKFfyEBid7K358f7bJuhY/edit#bookmark=id.t8ov2pdm0t5"
+        )
 
     def default_settings(self):
         cur = self.pmain.con.cursor()
@@ -40,7 +42,8 @@ class ChangePresetWidget(QWidget, Ui_Change_Preset):
         cur = self.pmain.con.cursor()
         result = cur.execute(
             """select Sensitivity, Indent, Step from preset 
-            where Name = ?""", [preset_name]
+            where Name = ?""",
+            [preset_name],
         ).fetchone()
         self.sensitivity_settings.setValue(result[0])
         self.indent_settings.setValue(result[1])
@@ -48,22 +51,26 @@ class ChangePresetWidget(QWidget, Ui_Change_Preset):
 
     def load_combobox(self):
         cur = self.pmain.con.cursor()
-        result = cur.execute(
-            """select Name from preset"""
-        ).fetchall()
-        result = [f'{i[0]}' for i in result]
+        result = cur.execute("""select Name from preset""").fetchall()
+        result = [f"{i[0]}" for i in result]
         self.presets.addItems(result)
 
     def save_settings(self):
         cur = self.pmain.con.cursor()
-        cur.execute("""
+        cur.execute(
+            """
             update preset
             set Sensitivity = ?,
             Indent = ?,
             Step = ?
             where Name = ?""",
-            [self.sensitivity_settings.value(), self.indent_settings.value(),
-             self.step_settings.value(), self.presets.currentText()])
+            [
+                self.sensitivity_settings.value(),
+                self.indent_settings.value(),
+                self.step_settings.value(),
+                self.presets.currentText(),
+            ],
+        )
         self.pmain.con.commit()
         self.pmain.combobox_changing()
 

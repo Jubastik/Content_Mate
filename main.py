@@ -1,7 +1,6 @@
 import sys
-import  os
+import os
 import webbrowser
-
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from datetime import date
 import threading
@@ -11,7 +10,7 @@ from content_mate import pause_handler
 from widgets.settings import SettingsWidget
 from widgets.wait import WaitWidget
 from widgets.automatization import AutomatizationWidget
-from UI_main import  Ui_MainWindow
+from UI_main import Ui_MainWindow
 
 
 class MainWidget(QMainWindow, Ui_MainWindow):
@@ -39,7 +38,6 @@ class MainWidget(QMainWindow, Ui_MainWindow):
 
         self.automatization_btn.clicked.connect(self.start_automatization_widget)
 
-
     def start_settings_widget(self):
         self.sw = SettingsWidget(self)
         self.sw.show()
@@ -49,10 +47,12 @@ class MainWidget(QMainWindow, Ui_MainWindow):
         self.ww.show()
 
     def open_info_web(self):
-        webbrowser.open('https://docs.google.com/document/d/1Ei-w7j8RJc28rdgABKlUQFaKFfyEBid7K358f7bJuhY/edit#bookmark=id.t8ov2pdm0t5')
+        webbrowser.open(
+            "https://docs.google.com/document/d/1Ei-w7j8RJc28rdgABKlUQFaKFfyEBid7K358f7bJuhY/edit#bookmark=id.t8ov2pdm0t5"
+        )
 
     def start_automatization_widget(self):
-        #виджет создаётся только в первый раз,
+        # виджет создаётся только в первый раз,
         # для исключения одновременного запуска двух задач поиска новых файлов
         if self.aw == "новый":
             self.aw = AutomatizationWidget(self)
@@ -77,11 +77,9 @@ class MainWidget(QMainWindow, Ui_MainWindow):
 
     def load_combobox(self):
         cur = self.con.cursor()
-        result = cur.execute(
-            """select Name from preset"""
-        ).fetchall()
+        result = cur.execute("""select Name from preset""").fetchall()
         # result = [f'{n} - {s}% {i}сек. {st}сек.' for n, s, i, st in result]
-        result = [f'{i[0]}' for i in result]
+        result = [f"{i[0]}" for i in result]
         self.presets.addItems(result)
 
     def default_settings(self):
@@ -112,26 +110,29 @@ class MainWidget(QMainWindow, Ui_MainWindow):
         cur = self.con.cursor()
         result = cur.execute(
             """select Sensitivity, Indent, Step from preset 
-            where Name = ?""", [preset_name]
+            where Name = ?""",
+            [preset_name],
         ).fetchone()
         self.sensitivity_settings.setValue(result[0])
         self.indent_settings.setValue(result[1])
         self.step_settings.setValue(result[2])
 
     def load_in(self):
-        fname = QFileDialog.getOpenFileNames(self, 'Выбрать файл (-ы)', '', 'Видео (*.mp4);')
+        fname = QFileDialog.getOpenFileNames(
+            self, "Выбрать файл (-ы)", "", "Видео (*.mp4);"
+        )
         if fname[0]:
             self.in_edit.setText("\n".join(fname[0]))
 
     def load_out(self):
-        fname = QFileDialog.getExistingDirectory(self, 'Выбрать папку', '')
+        fname = QFileDialog.getExistingDirectory(self, "Выбрать папку", "")
         if fname:
             self.out_edit.setText(fname)
 
     def start(self):
         in_path = self.in_edit.toPlainText().split("\n")
         out_path = self.out_edit.text()
-        if in_path and out_path and os.path.isfile(in_path[0]) and os.path.isdir(out_path):
+        if self.check_path():
             if self.log:
                 self.log_file.write(f"Старт обработки файлов {in_path}\n")
             sensitivity = float("0." + self.sensitivity_settings.text())
@@ -139,20 +140,56 @@ class MainWidget(QMainWindow, Ui_MainWindow):
             step = self.step_settings.value()
             self.start_wait_widget()
             self.start_btn.setEnabled(False)
-            my_thread = threading.Thread(target=pause_handler, args=(self.finish_process, in_path, out_path, sensitivity, indent, step, self.log, self.log_file))
+            my_thread = threading.Thread(
+                target=pause_handler,
+                args=(
+                    self.finish_process,
+                    in_path,
+                    out_path,
+                    sensitivity,
+                    indent,
+                    step,
+                    self.log,
+                    self.log_file,
+                ),
+            )
             my_thread.start()
-        else:
-            self.statusbar.showMessage("Неправильный входной или выходной путь.")
 
     # Завершение обработки видео
     def finish_process(self):
         self.ww.hide()
         self.start_btn.setEnabled(True)
 
+    def check_path(self):
+        if self.in_edit.toPlainText() == "" and self.out_edit.text() == "":
+            self.statusbar.showMessage("Пустой входной и выходной путь.", 10000)
+            return False
+        if self.in_edit.toPlainText() == "":
+            self.statusbar.showMessage("Пустой входной путь.", 10000)
+            return False
+        if self.out_edit.text() == "":
+            self.statusbar.showMessage("Пустой выходной путь.", 10000)
+            return False
+        for path in self.in_edit.toPlainText().split("\n"):
+            if not os.path.isfile(path):
+                if not os.path.isdir(self.out_edit.text()):
+                    self.statusbar.showMessage(
+                        f"Несуществующий входной и выходной путь: {path}.", 10000
+                    )
+                    return False
+                else:
+                    self.statusbar.showMessage(
+                        f"Несуществующий входной путь:{path}.", 10000
+                    )
+                    return False
+        if not os.path.isdir(self.out_edit.text()):
+            self.statusbar.showMessage("Несуществующий выходной путь.", 10000)
+            return False
+        return True
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     ex = MainWidget()
     ex.show()
     sys.exit(app.exec_())
-

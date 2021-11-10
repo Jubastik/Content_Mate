@@ -5,12 +5,13 @@ from .UI_settings import Ui_Form
 from .addPreset import AddPresetWidget
 from .changePreset import ChangePresetWidget
 
+
 class SettingsWidget(QWidget, Ui_Form):
     def __init__(self, parent):
         super().__init__()
         # uic.loadUi('settings_v2.ui', self)
         self.setupUi(self)
-        self.parent = parent #ссылка на основное окно
+        self.parent = parent  # ссылка на основное окно
         self.connect_btn()
         self.load_settings_db()
         self.load_combobox()
@@ -43,11 +44,9 @@ class SettingsWidget(QWidget, Ui_Form):
 
     def load_combobox(self):
         cur = self.parent.con.cursor()
-        result = cur.execute(
-            """select Name from preset"""
-        ).fetchall()
+        result = cur.execute("""select Name from preset""").fetchall()
         # result = [f'{n} - {s}% {i}сек. {st}сек.' for n, s, i, st in result]
-        result = [f'{i[0]}' for i in result]
+        result = [f"{i[0]}" for i in result]
         self.presets.addItems(result)
 
     def delete_preset(self):
@@ -57,41 +56,50 @@ class SettingsWidget(QWidget, Ui_Form):
             cur.execute(
                 """DELETE from preset
                     where Name = ?
-                        """, [name])
+                        """,
+                [name],
+            )
             self.parent.con.commit()
             self.presets.removeItem(self.presets.findText(name))
             self.parent.presets.removeItem(self.parent.presets.findText(name))
 
     def save_settings(self):
         cur = self.parent.con.cursor()
-        cur.execute("""
+        cur.execute(
+            """
             update main
             set PathReadOnly = ?
             where id = 1
-                """, [not self.can_edit.isChecked()]
-                    ).fetchone()
+                """,
+            [not self.can_edit.isChecked()],
+        ).fetchone()
 
         cur = self.parent.con.cursor()
-        cur.execute("""
+        cur.execute(
+            """
                 update main
                 set Log = ?
                 where id = 1
-                    """, [self.log.isChecked()]
-                    ).fetchone()
+                    """,
+            [self.log.isChecked()],
+        ).fetchone()
 
         if self.default_path.text() == "" or os.path.isdir(self.default_path.text()):
             cur = self.parent.con.cursor()
-            cur.execute("""
+            cur.execute(
+                """
                     update main
                     set OutPath = ?
                     where id = 1
-                            """, [self.default_path.text()]).fetchone()
+                            """,
+                [self.default_path.text()],
+            ).fetchone()
 
         self.parent.con.commit()
         self.parent.load_settings_db()
 
     def load_path(self):
-        fname = QFileDialog.getExistingDirectory(self, 'Выбрать папку', '')
+        fname = QFileDialog.getExistingDirectory(self, "Выбрать папку", "")
         if fname:
             self.default_path.setText(fname)
 
