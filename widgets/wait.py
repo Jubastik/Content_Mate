@@ -1,3 +1,4 @@
+from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QMovie
 
@@ -10,4 +11,5 @@ class WaitWidget(QWidget, Ui_Form_Wait):
         self.setupUi(self)
         self.movie = QMovie("./resources/wait.gif")
         self.label.setMovie(self.movie)
+        self.movie.setScaledSize(QSize(720, 540))
         self.movie.start()
