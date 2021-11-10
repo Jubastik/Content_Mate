@@ -33,6 +33,7 @@ class AutomatizationWidget(QWidget, Ui_Form):
         )
 
     def open_info_automation_web(self):
+        # информация об автоматизации
         webbrowser.open(
             "https://docs.google.com/document/d/1Ei-w7j8RJc28rdgABKlUQFaKFfyEBid7K358f7bJuhY/edit#bookmark=id.o7ls0r51164r"
         )
@@ -48,6 +49,7 @@ class AutomatizationWidget(QWidget, Ui_Form):
         self.step_settings.setValue(result[3])
 
     def interface_on_off(self, position):
+        # отключение интерфейса на время работы задачи по поиску  файлов
         self.presets.setEnabled(position)
         self.sensitivity_settings.setEnabled(position)
         self.indent_settings.setEnabled(position)
@@ -92,6 +94,7 @@ class AutomatizationWidget(QWidget, Ui_Form):
         return True
 
     def task_completed(self):
+        # вызываетсяпосле остановки поиска новых файлов
         self.interface_on_off(True)
 
     def load_in(self):
@@ -107,12 +110,11 @@ class AutomatizationWidget(QWidget, Ui_Form):
     def load_combobox(self):
         cur = self.parent.con.cursor()
         result = cur.execute("""select Name from preset""").fetchall()
-        # result = [f'{n} - {s}% {i}сек. {st}сек.' for n, s, i, st in result]
         result = [f"{i[0]}" for i in result]
         self.presets.addItems(result)
 
     def checkbox_changing(self):
-        if self.use_presets.isChecked() == False:
+        if not self.use_presets.isChecked():
             self.presets.setEnabled(False)
             self.sensitivity_settings.setEnabled(True)
             self.indent_settings.setEnabled(True)

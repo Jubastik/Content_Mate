@@ -16,13 +16,12 @@ from UI_main import Ui_MainWindow
 class MainWidget(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        # uic.loadUi('main_v2.ui', self)
         self.setupUi(self)
         self.load_settings_db()
         self.connect_all()
-        self.checkbox_changing()
+        self.checkbox_changing()  # при старте отключаем выбор комбобокса
         self.load_combobox()
-        self.default_settings()
+        self.default_settings()  # загружаем значения в спин боксы
         self.aw = "новый"
 
     def connect_all(self):
@@ -47,6 +46,7 @@ class MainWidget(QMainWindow, Ui_MainWindow):
         self.ww.show()
 
     def open_info_web(self):
+        # информация о настройках обработки
         webbrowser.open(
             "https://docs.google.com/document/d/1Ei-w7j8RJc28rdgABKlUQFaKFfyEBid7K358f7bJuhY/edit#bookmark=id.t8ov2pdm0t5"
         )
@@ -78,7 +78,6 @@ class MainWidget(QMainWindow, Ui_MainWindow):
     def load_combobox(self):
         cur = self.con.cursor()
         result = cur.execute("""select Name from preset""").fetchall()
-        # result = [f'{n} - {s}% {i}сек. {st}сек.' for n, s, i, st in result]
         result = [f"{i[0]}" for i in result]
         self.presets.addItems(result)
 
@@ -93,7 +92,7 @@ class MainWidget(QMainWindow, Ui_MainWindow):
         self.step_settings.setValue(result[3])
 
     def checkbox_changing(self):
-        if self.use_presets.isChecked() == False:
+        if not self.use_presets.isChecked():
             self.presets.setEnabled(False)
             self.sensitivity_settings.setEnabled(True)
             self.indent_settings.setEnabled(True)

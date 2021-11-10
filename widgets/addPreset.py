@@ -1,5 +1,5 @@
 import webbrowser
-from PyQt5.QtWidgets import QFileDialog, QWidget, QMessageBox
+from PyQt5.QtWidgets import QWidget, QMessageBox
 import sqlite3
 
 from .UI_addPreset import Ui_Add_Preset
@@ -14,21 +14,6 @@ class AddPresetWidget(QWidget, Ui_Add_Preset):
         self.default_settings()
         self.connect_btn()
         self.create_dialog()
-
-    def create_dialog(self):
-        self.msg_no_name = QMessageBox()
-        self.msg_no_name.setIcon(QMessageBox.Warning)
-        self.msg_no_name.setWindowTitle("Ошибка создания пресета")
-        self.msg_no_name.setText("Пустое имя пресета")
-        self.msg_no_name.setInformativeText("Пожалуйста введите имя для нового пресета")
-
-        self.msg_bad_name = QMessageBox()
-        self.msg_bad_name.setIcon(QMessageBox.Warning)
-        self.msg_bad_name.setWindowTitle("Ошибка создания пресета")
-        self.msg_bad_name.setText("Не уникальное имя пресета")
-        self.msg_bad_name.setInformativeText(
-            "Пожалуйста, введите уникальное имя пресета"
-        )
 
     def connect_btn(self):
         self.save_btn.clicked.connect(self.save_preset)
@@ -79,3 +64,18 @@ class AddPresetWidget(QWidget, Ui_Add_Preset):
 
     def close_widget(self):
         self.psettings.aw.hide()
+
+    def create_dialog(self):
+        self.msg_no_name = QMessageBox()
+        self.msg_no_name.setIcon(QMessageBox.Warning)
+        self.msg_no_name.setWindowTitle("Ошибка создания пресета")
+        self.msg_no_name.setText("Пустое имя пресета")
+        self.msg_no_name.setInformativeText("Пожалуйста введите имя для нового пресета")
+
+        self.msg_bad_name = QMessageBox()
+        self.msg_bad_name.setIcon(QMessageBox.Warning)
+        self.msg_bad_name.setWindowTitle("Ошибка создания пресета")
+        self.msg_bad_name.setText("Не уникальное имя пресета")
+        self.msg_bad_name.setInformativeText(
+            "Пожалуйста, введите уникальное имя пресета"
+        )

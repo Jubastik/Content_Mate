@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QFileDialog, QWidget, QMessageBox
+from PyQt5.QtWidgets import QFileDialog, QWidget
 import os
 
 from .UI_settings import Ui_Form
@@ -9,7 +9,6 @@ from .changePreset import ChangePresetWidget
 class SettingsWidget(QWidget, Ui_Form):
     def __init__(self, parent):
         super().__init__()
-        # uic.loadUi('settings_v2.ui', self)
         self.setupUi(self)
         self.parent = parent  # ссылка на основное окно
         self.connect_btn()
@@ -45,7 +44,6 @@ class SettingsWidget(QWidget, Ui_Form):
     def load_combobox(self):
         cur = self.parent.con.cursor()
         result = cur.execute("""select Name from preset""").fetchall()
-        # result = [f'{n} - {s}% {i}сек. {st}сек.' for n, s, i, st in result]
         result = [f"{i[0]}" for i in result]
         self.presets.addItems(result)
 
@@ -68,21 +66,12 @@ class SettingsWidget(QWidget, Ui_Form):
         cur.execute(
             """
             update main
-            set PathReadOnly = ?
+            set PathReadOnly = ?,
+            Log = ?
             where id = 1
                 """,
-            [not self.can_edit.isChecked()],
-        ).fetchone()
-
-        cur = self.parent.con.cursor()
-        cur.execute(
-            """
-                update main
-                set Log = ?
-                where id = 1
-                    """,
-            [self.log.isChecked()],
-        ).fetchone()
+            [not self.can_edit.isChecked(), self.log.isChecked()],
+        )
 
         if self.default_path.text() == "" or os.path.isdir(self.default_path.text()):
             cur = self.parent.con.cursor()
@@ -93,7 +82,7 @@ class SettingsWidget(QWidget, Ui_Form):
                     where id = 1
                             """,
                 [self.default_path.text()],
-            ).fetchone()
+            )
 
         self.parent.con.commit()
         self.parent.load_settings_db()
