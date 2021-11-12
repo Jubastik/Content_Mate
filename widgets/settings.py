@@ -7,9 +7,10 @@ from .changePreset import ChangePresetWidget
 
 
 class SettingsWidget(QWidget, Ui_Form):
-    def __init__(self, parent):
+    def __init__(self, parent, DB):
         super().__init__()
         self.setupUi(self)
+        self.DB = DB
         self.parent = parent  # ссылка на основное окно
         self.connect_btn()
         self.load_settings_db()
@@ -24,67 +25,34 @@ class SettingsWidget(QWidget, Ui_Form):
         self.cancel_btn.clicked.connect(self.close_widget)
 
     def start_add_wiget(self):
-        self.aw = AddPresetWidget(self.parent, self)
+        self.aw = AddPresetWidget(self.parent, self, self.DB)
         self.aw.show()
 
     def start_change_widget(self):
-        self.cw = ChangePresetWidget(self.parent, self)
+        self.cw = ChangePresetWidget(self.parent, self, self.DB)
         self.cw.show()
 
     def load_settings_db(self):
-        cur = self.parent.con.cursor()
-        result = cur.execute(
-            """select PathReadOnly, Log, OutPath from main 
-            where id = 1"""
-        ).fetchone()
+        result = self.DB.get_start_settings()
         self.can_edit.setChecked(not result[0])
         self.log.setChecked(result[1])
         self.default_path.setText(result[2])
 
     def load_combobox(self):
-        cur = self.parent.con.cursor()
-        result = cur.execute("""select Name from preset""").fetchall()
-        result = [f"{i[0]}" for i in result]
+        result = self.DB.get_all_preset_names()
         self.presets.addItems(result)
 
     def delete_preset(self):
         name = self.presets.currentText()
         if name != "Default":
-            cur = self.parent.con.cursor()
-            cur.execute(
-                """DELETE from preset
-                    where Name = ?
-                        """,
-                [name],
-            )
-            self.parent.con.commit()
+            self.DB.del_preset(name)
+            self.DB.con.commit()
             self.presets.removeItem(self.presets.findText(name))
             self.parent.presets.removeItem(self.parent.presets.findText(name))
 
     def save_settings(self):
-        cur = self.parent.con.cursor()
-        cur.execute(
-            """
-            update main
-            set PathReadOnly = ?,
-            Log = ?
-            where id = 1
-                """,
-            [not self.can_edit.isChecked(), self.log.isChecked()],
-        )
-
-        if self.default_path.text() == "" or os.path.isdir(self.default_path.text()):
-            cur = self.parent.con.cursor()
-            cur.execute(
-                """
-                    update main
-                    set OutPath = ?
-                    where id = 1
-                            """,
-                [self.default_path.text()],
-            )
-
-        self.parent.con.commit()
+        self.DB.update_settings(not self.can_edit.isChecked(), self.log.isChecked(), self.default_path.text())
+        self.DB.con.commit()
         self.parent.load_settings_db()
 
     def load_path(self):

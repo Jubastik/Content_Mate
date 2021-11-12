@@ -6,9 +6,10 @@ from .UI_addPreset import Ui_Add_Preset
 
 
 class AddPresetWidget(QWidget, Ui_Add_Preset):
-    def __init__(self, pmain, psettings):
+    def __init__(self, pmain, psettings, DB):
         super().__init__()
         self.setupUi(self)
+        self.DB = DB
         self.pmain = pmain  # ссылка на основное окно
         self.psettings = psettings  # ссылка на окно настроек
         self.default_settings()
@@ -27,40 +28,25 @@ class AddPresetWidget(QWidget, Ui_Add_Preset):
         )
 
     def default_settings(self):
-        cur = self.pmain.con.cursor()
-        result = cur.execute(
-            """select * from preset
-            where Name = 'Default'"""
-        ).fetchone()
-        self.sensitivity_settings.setValue(result[1])
-        self.indent_settings.setValue(result[2])
-        self.step_settings.setValue(result[3])
+        result = self.DB.get_default_processing_parameters()
+        self.sensitivity_settings.setValue(result[0])
+        self.indent_settings.setValue(result[1])
+        self.step_settings.setValue(result[2])
 
     def save_preset(self):
         if self.preset_name.text() == "":
             self.msg_no_name.exec_()
         else:
-            cur = self.pmain.con.cursor()
             try:
-                cur.execute(
-                    """
-                           INSERT INTO
-                           preset VALUES
-                           (?, ?, ?, ?)
-                               """,
-                    [
-                        self.preset_name.text(),
+                self.DB.save_preset(self.preset_name.text(),
                         self.sensitivity_settings.value(),
                         self.indent_settings.value(),
-                        self.step_settings.value(),
-                    ],
-                )
+                        self.step_settings.value())
+                self.DB.con.commit()
+                self.pmain.presets.addItem(self.preset_name.text())
+                self.psettings.presets.addItem(self.preset_name.text())
             except sqlite3.IntegrityError:
                 self.msg_bad_name.exec_()
-
-            self.pmain.con.commit()
-            self.pmain.presets.addItem(self.preset_name.text())
-            self.psettings.presets.addItem(self.preset_name.text())
 
     def close_widget(self):
         self.psettings.aw.hide()

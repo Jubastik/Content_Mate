@@ -11,12 +11,14 @@ from widgets.settings import SettingsWidget
 from widgets.wait import WaitWidget
 from widgets.automatization import AutomatizationWidget
 from UI_main import Ui_MainWindow
+from Database.database import Database
 
 
 class MainWidget(QMainWindow, Ui_MainWindow):
-    def __init__(self):
+    def __init__(self, DB):
         super().__init__()
         self.setupUi(self)
+        self.DB = DB
         self.load_settings_db()
         self.connect_all()
         self.checkbox_changing()  # при старте отключаем выбор комбобокса
@@ -38,8 +40,9 @@ class MainWidget(QMainWindow, Ui_MainWindow):
         self.automatization_btn.clicked.connect(self.start_automatization_widget)
 
     def start_settings_widget(self):
-        self.sw = SettingsWidget(self)
+        self.sw = SettingsWidget(self, self.DB)
         self.sw.show()
+
 
     def start_wait_widget(self):
         self.ww = WaitWidget()
@@ -55,17 +58,11 @@ class MainWidget(QMainWindow, Ui_MainWindow):
         # виджет создаётся только в первый раз,
         # для исключения одновременного запуска двух задач поиска новых файлов
         if self.aw == "новый":
-            self.aw = AutomatizationWidget(self)
+            self.aw = AutomatizationWidget(self, self.DB)
         self.aw.show()
 
     def load_settings_db(self):
-        self.con = sqlite3.connect("settings.db")
-        cur = self.con.cursor()
-        result = cur.execute(
-            """select PathReadOnly, Log, OutPath from main 
-            where id = 1"""
-        ).fetchone()
-
+        result = self.DB.get_start_settings()
         self.in_edit.setReadOnly(result[0])
         self.out_edit.setReadOnly(result[0])
         self.out_edit.setText(result[2])
@@ -76,20 +73,14 @@ class MainWidget(QMainWindow, Ui_MainWindow):
             self.log_file = ""
 
     def load_combobox(self):
-        cur = self.con.cursor()
-        result = cur.execute("""select Name from preset""").fetchall()
-        result = [f"{i[0]}" for i in result]
+        result = self.DB.get_all_preset_names()
         self.presets.addItems(result)
 
     def default_settings(self):
-        cur = self.con.cursor()
-        result = cur.execute(
-            """select * from preset
-            where Name = 'Default'"""
-        ).fetchone()
-        self.sensitivity_settings.setValue(result[1])
-        self.indent_settings.setValue(result[2])
-        self.step_settings.setValue(result[3])
+        result = self.DB.get_default_processing_parameters()
+        self.sensitivity_settings.setValue(result[0])
+        self.indent_settings.setValue(result[1])
+        self.step_settings.setValue(result[2])
 
     def checkbox_changing(self):
         if not self.use_presets.isChecked():
@@ -106,12 +97,7 @@ class MainWidget(QMainWindow, Ui_MainWindow):
 
     def combobox_changing(self):
         preset_name = self.presets.currentText()
-        cur = self.con.cursor()
-        result = cur.execute(
-            """select Sensitivity, Indent, Step from preset 
-            where Name = ?""",
-            [preset_name],
-        ).fetchone()
+        result = self.DB.get_processing_parameters(preset_name)
         self.sensitivity_settings.setValue(result[0])
         self.indent_settings.setValue(result[1])
         self.step_settings.setValue(result[2])
@@ -189,6 +175,9 @@ class MainWidget(QMainWindow, Ui_MainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    ex = MainWidget()
+    DB = Database("Database/settings.db")
+    ex = MainWidget(DB)
     ex.show()
-    sys.exit(app.exec_())
+    code = app.exec()
+    DB.close()
+    sys.exit(code)

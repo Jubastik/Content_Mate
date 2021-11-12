@@ -7,9 +7,10 @@ from .searchTask import SearchWidget
 
 
 class AutomatizationWidget(QWidget, Ui_Form):
-    def __init__(self, parent):
+    def __init__(self, parent, DB):
         super().__init__()
         self.setupUi(self)
+        self.DB = DB
         self.parent = parent  # ссылка на основное окно
         self.connect_all()
         self.load_combobox()
@@ -39,14 +40,10 @@ class AutomatizationWidget(QWidget, Ui_Form):
         )
 
     def default_settings(self):
-        cur = self.parent.con.cursor()
-        result = cur.execute(
-            """select * from preset
-            where Name = 'Default'"""
-        ).fetchone()
-        self.sensitivity_settings.setValue(result[1])
-        self.indent_settings.setValue(result[2])
-        self.step_settings.setValue(result[3])
+        result = self.DB.get_default_processing_parameters()
+        self.sensitivity_settings.setValue(result[0])
+        self.indent_settings.setValue(result[1])
+        self.step_settings.setValue(result[2])
 
     def interface_on_off(self, position):
         # отключение интерфейса на время работы задачи по поиску  файлов
@@ -108,9 +105,7 @@ class AutomatizationWidget(QWidget, Ui_Form):
             self.out_edit.setText(fname)
 
     def load_combobox(self):
-        cur = self.parent.con.cursor()
-        result = cur.execute("""select Name from preset""").fetchall()
-        result = [f"{i[0]}" for i in result]
+        result = self.DB.get_all_preset_names()
         self.presets.addItems(result)
 
     def checkbox_changing(self):
@@ -128,12 +123,7 @@ class AutomatizationWidget(QWidget, Ui_Form):
 
     def combobox_changing(self):
         preset_name = self.presets.currentText()
-        cur = self.parent.con.cursor()
-        result = cur.execute(
-            """select Sensitivity, Indent, Step from preset 
-            where Name = ?""",
-            [preset_name],
-        ).fetchone()
+        result = self.DB.get_processing_parameters(preset_name)
         self.sensitivity_settings.setValue(result[0])
         self.indent_settings.setValue(result[1])
         self.step_settings.setValue(result[2])

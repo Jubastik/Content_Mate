@@ -6,9 +6,10 @@ from .UI_changePreset import Ui_Change_Preset
 
 
 class ChangePresetWidget(QWidget, Ui_Change_Preset):
-    def __init__(self, pmain, psettings):
+    def __init__(self, pmain, psettings, DB):
         super().__init__()
         self.setupUi(self)
+        self.DB = DB
         self.pmain = pmain  # ссылка на основное окно
         self.psettings = psettings  # ссылка на окно настроек
         self.load_combobox()
@@ -28,50 +29,25 @@ class ChangePresetWidget(QWidget, Ui_Change_Preset):
         )
 
     def default_settings(self):
-        cur = self.pmain.con.cursor()
-        result = cur.execute(
-            """select * from preset
-            where Name = 'Default'"""
-        ).fetchone()
-        self.sensitivity_settings.setValue(result[1])
-        self.indent_settings.setValue(result[2])
-        self.step_settings.setValue(result[3])
+        result = self.DB.get_default_processing_parameters()
+        self.sensitivity_settings.setValue(result[0])
+        self.indent_settings.setValue(result[1])
+        self.step_settings.setValue(result[2])
 
     def combobox_changing(self):
         preset_name = self.presets.currentText()
-        cur = self.pmain.con.cursor()
-        result = cur.execute(
-            """select Sensitivity, Indent, Step from preset 
-            where Name = ?""",
-            [preset_name],
-        ).fetchone()
+        result = self.DB.get_processing_parameters(preset_name)
         self.sensitivity_settings.setValue(result[0])
         self.indent_settings.setValue(result[1])
         self.step_settings.setValue(result[2])
 
     def load_combobox(self):
-        cur = self.pmain.con.cursor()
-        result = cur.execute("""select Name from preset""").fetchall()
-        result = [f"{i[0]}" for i in result]
+        result = self.DB.get_all_preset_names()
         self.presets.addItems(result)
 
     def save_settings(self):
-        cur = self.pmain.con.cursor()
-        cur.execute(
-            """
-            update preset
-            set Sensitivity = ?,
-            Indent = ?,
-            Step = ?
-            where Name = ?""",
-            [
-                self.sensitivity_settings.value(),
-                self.indent_settings.value(),
-                self.step_settings.value(),
-                self.presets.currentText(),
-            ],
-        )
-        self.pmain.con.commit()
+        self.DB.update_processing_parameters(self.presets.currentText(), self.sensitivity_settings.value(), self.indent_settings.value(), self.step_settings.value())
+        self.DB.con.commit()
         self.pmain.combobox_changing()
 
     def close_widget(self):
