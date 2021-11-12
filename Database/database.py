@@ -97,7 +97,6 @@ class Database:
             ],
         )
 
-
     def cur(self):
         return self.con.cursor()
 

@@ -4,7 +4,6 @@ import webbrowser
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from datetime import date
 import threading
-import sqlite3
 
 from content_mate import pause_handler
 from widgets.settings import SettingsWidget
@@ -42,7 +41,6 @@ class MainWidget(QMainWindow, Ui_MainWindow):
     def start_settings_widget(self):
         self.sw = SettingsWidget(self, self.DB)
         self.sw.show()
-
 
     def start_wait_widget(self):
         self.ww = WaitWidget()

@@ -46,7 +46,12 @@ class ChangePresetWidget(QWidget, Ui_Change_Preset):
         self.presets.addItems(result)
 
     def save_settings(self):
-        self.DB.update_processing_parameters(self.presets.currentText(), self.sensitivity_settings.value(), self.indent_settings.value(), self.step_settings.value())
+        self.DB.update_processing_parameters(
+            self.presets.currentText(),
+            self.sensitivity_settings.value(),
+            self.indent_settings.value(),
+            self.step_settings.value(),
+        )
         self.DB.con.commit()
         self.pmain.combobox_changing()
 

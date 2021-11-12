@@ -1,5 +1,4 @@
 from PyQt5.QtWidgets import QFileDialog, QWidget
-import os
 
 from .UI_settings import Ui_Form
 from .addPreset import AddPresetWidget
@@ -51,7 +50,11 @@ class SettingsWidget(QWidget, Ui_Form):
             self.parent.presets.removeItem(self.parent.presets.findText(name))
 
     def save_settings(self):
-        self.DB.update_settings(not self.can_edit.isChecked(), self.log.isChecked(), self.default_path.text())
+        self.DB.update_settings(
+            not self.can_edit.isChecked(),
+            self.log.isChecked(),
+            self.default_path.text(),
+        )
         self.DB.con.commit()
         self.parent.load_settings_db()
 

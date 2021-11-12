@@ -38,10 +38,12 @@ class AddPresetWidget(QWidget, Ui_Add_Preset):
             self.msg_no_name.exec_()
         else:
             try:
-                self.DB.save_preset(self.preset_name.text(),
-                        self.sensitivity_settings.value(),
-                        self.indent_settings.value(),
-                        self.step_settings.value())
+                self.DB.save_preset(
+                    self.preset_name.text(),
+                    self.sensitivity_settings.value(),
+                    self.indent_settings.value(),
+                    self.step_settings.value(),
+                )
                 self.DB.con.commit()
                 self.pmain.presets.addItem(self.preset_name.text())
                 self.psettings.presets.addItem(self.preset_name.text())
