@@ -2,7 +2,7 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QMovie
 
-from .UI_wait import Ui_Form_Wait
+from UI_widgets.UI_wait import Ui_Form_Wait
 
 
 class WaitWidget(QWidget, Ui_Form_Wait):

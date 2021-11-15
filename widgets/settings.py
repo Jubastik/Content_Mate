@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QFileDialog, QWidget
 
-from .UI_settings import Ui_Form
+from UI_widgets.UI_settings import Ui_Form
 from .addPreset import AddPresetWidget
 from .changePreset import ChangePresetWidget
 

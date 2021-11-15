@@ -2,7 +2,7 @@ import webbrowser
 
 from PyQt5.QtWidgets import QWidget
 
-from .UI_changePreset import Ui_Change_Preset
+from UI_widgets.UI_changePreset import Ui_Change_Preset
 
 
 class ChangePresetWidget(QWidget, Ui_Change_Preset):

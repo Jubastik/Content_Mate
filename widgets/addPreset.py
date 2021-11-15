@@ -2,7 +2,7 @@ import webbrowser
 from PyQt5.QtWidgets import QWidget, QMessageBox
 import sqlite3
 
-from .UI_addPreset import Ui_Add_Preset
+from UI_widgets.UI_addPreset import Ui_Add_Preset
 
 
 class AddPresetWidget(QWidget, Ui_Add_Preset):

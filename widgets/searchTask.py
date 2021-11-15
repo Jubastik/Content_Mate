@@ -2,13 +2,12 @@ import shutil
 import threading
 
 from PyQt5 import QtTest
-from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QFileDialog, QWidget, QMessageBox
+from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QPixmap
 import os
 
 from content_mate import pause_handler
-from .UI_searchTask import Ui_Form
+from UI_widgets.UI_searchTask import Ui_Form
 
 
 class SearchWidget(QWidget, Ui_Form):

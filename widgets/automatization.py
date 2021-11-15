@@ -2,7 +2,7 @@ import webbrowser
 from PyQt5.QtWidgets import QFileDialog, QWidget, QMessageBox
 import os
 
-from .UI_automatization import Ui_Form
+from UI_widgets.UI_automatization import Ui_Form
 from .searchTask import SearchWidget
 
 
