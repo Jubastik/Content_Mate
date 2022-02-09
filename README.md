@@ -15,6 +15,7 @@
 
  1. Скопируйте и распакуйте репозиторий
  2. Установите библиотеки из файла **requirements.txt**
+ 
 	`pip install -r requirements.txt`
 	
  3. Запустите main.py
